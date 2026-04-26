@@ -11,7 +11,20 @@ const logger = require('./utils/logger');
 
 // This require triggers database.js which opens the SQLite file and
 // runs CREATE TABLE IF NOT EXISTS — so the DB is ready before any request hits
-require('./config/database');
+const db = require('./config/database');
+const path = require('path');
+
+// Auto-seed if database is empty
+try {
+  const row = db.prepare('SELECT COUNT(*) as count FROM items').get();
+  if (row.count === 0) {
+    logger.info('Database empty — running seed...');
+    require('../scripts/seed');
+    logger.info('Seed complete');
+  }
+} catch (e) {
+  logger.error('Seed check failed', { error: e.message });
+}
 
 const PORT = parseInt(process.env.PORT) || 3000;
 
