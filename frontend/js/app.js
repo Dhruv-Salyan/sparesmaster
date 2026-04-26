@@ -5,7 +5,7 @@
 //  API: connects to Node/Express/SQLite backend on /api/items
 // ═══════════════════════════════════════════════════════════════════════════
 // ── Config ───────────────────────────────────────────────────────────────────
-const API_BASE = 'http://localhost:3000/api';
+const API_BASE = 'https://sparesmaster.onrender.com/api';
 // ── State ────────────────────────────────────────────────────────────────────
 let allItems = [];
 let filteredItems = [];
