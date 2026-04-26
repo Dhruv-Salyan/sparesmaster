@@ -9,7 +9,7 @@ services:
     runtime: node
     rootDir: backend
     buildCommand: npm install
-    startCommand: npm start
+    startCommand: node scripts/seed.js && npm start
     healthCheckPath: /api/health
     envVars:
       - key: NODE_ENV
