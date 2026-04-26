@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "target": "ES2017",
+    "module": "None",
+    "ignoreDeprecations": "6.0",
+    "strict": false,
+    "skipLibCheck": true,
+    "noEmitOnError": false,
+    "lib": ["ES2017", "DOM"]
+  },
+  "files": ["js/app.ts"]
+}

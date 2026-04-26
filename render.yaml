@@ -1,0 +1,32 @@
+# ─────────────────────────────────────────────────────────────────
+#  render.yaml — Render.com Infrastructure-as-Code
+#  Docs: https://render.com/docs/blueprint-spec
+# ─────────────────────────────────────────────────────────────────
+
+services:
+  - type: web
+    name: sparesmaster-api
+    runtime: node
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3000
+      - key: DB_PATH
+        value: /var/data/inventory.db
+      - key: CORS_ORIGIN
+        value: "*"
+      - key: LOG_LEVEL
+        value: info
+      - key: RATE_LIMIT_WINDOW_MS
+        value: 900000
+      - key: RATE_LIMIT_MAX
+        value: 100
+    disk:
+      name: sparesmaster-db
+      mountPath: /var/data
+      sizeGB: 1
