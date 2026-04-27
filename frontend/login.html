@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SparesMaster — Sign In</title>
+  <meta name="description" content="Sign in to SparesMaster Inventory Control" />
+  <link rel="stylesheet" href="css/styles.css" />
+  <style>
+    /* ── Auth Layout ─────────────────────────────────────────────────── */
+    .auth-page {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .auth-card {
+      width: 100%;
+      max-width: 440px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: 40px;
+      box-shadow: var(--shadow-modal);
+      animation: slideUp 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .auth-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--amber), transparent);
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── Brand ───────────────────────────────────────────────────────── */
+    .auth-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+
+    .auth-logo-icon {
+      width: 42px;
+      height: 42px;
+      background: var(--amber);
+      border-radius: var(--radius-sm);
+      display: grid;
+      place-items: center;
+      box-shadow: 0 0 24px var(--amber-glow);
+      flex-shrink: 0;
+    }
+
+    .auth-logo-icon svg { color: #fff; }
+
+    .auth-brand-text .brand-name {
+      font-family: var(--font-display);
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--text-primary);
+      letter-spacing: -0.02em;
+    }
+
+    .auth-brand-text .brand-sub {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--text-muted);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-top: 1px;
+    }
+
+    /* ── Headings ────────────────────────────────────────────────────── */
+    .auth-heading {
+      font-family: var(--font-display);
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--text-primary);
+      letter-spacing: -0.03em;
+      margin-bottom: 6px;
+    }
+
+    .auth-sub {
+      font-size: 13.5px;
+      color: var(--text-secondary);
+      margin-bottom: 28px;
+    }
+
+    /* ── Form ────────────────────────────────────────────────────────── */
+    .auth-form { display: flex; flex-direction: column; gap: 16px; }
+
+    .auth-field { display: flex; flex-direction: column; gap: 6px; }
+
+    .auth-label {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .auth-input-wrap { position: relative; }
+
+    .auth-input {
+      width: 100%;
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text-primary);
+      font-family: var(--font-body);
+      font-size: 14px;
+      padding: 11px 14px;
+      outline: none;
+      transition: var(--transition);
+    }
+
+    .auth-input:focus {
+      border-color: var(--amber);
+      box-shadow: 0 0 0 3px var(--amber-dim);
+    }
+
+    .auth-input::placeholder { color: var(--text-muted); }
+
+    .auth-input.has-icon { padding-right: 44px; }
+
+    .auth-input.error {
+      border-color: var(--red);
+      box-shadow: 0 0 0 3px var(--red-dim);
+    }
+
+    /* Toggle password visibility */
+    .pwd-toggle {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--text-muted);
+      padding: 4px;
+      display: grid;
+      place-items: center;
+      transition: var(--transition);
+    }
+
+    .pwd-toggle:hover { color: var(--text-secondary); }
+
+    /* ── Row: remember me + forgot ───────────────────────────────────── */
+    .auth-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: -4px;
+    }
+
+    .auth-checkbox-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      font-size: 13px;
+      color: var(--text-secondary);
+      user-select: none;
+    }
+
+    .auth-checkbox-label input[type="checkbox"] {
+      width: 15px;
+      height: 15px;
+      accent-color: var(--amber);
+      cursor: pointer;
+    }
+
+    .auth-link {
+      font-size: 13px;
+      color: var(--amber);
+      text-decoration: none;
+      font-weight: 500;
+      transition: var(--transition);
+    }
+
+    .auth-link:hover { color: #b91c3c; }
+
+    /* ── Error Banner ────────────────────────────────────────────────── */
+    .auth-error {
+      display: none;
+      background: var(--red-dim);
+      border: 1px solid rgba(239,68,68,0.25);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      font-size: 13px;
+      color: var(--red);
+      gap: 8px;
+      align-items: flex-start;
+    }
+
+    .auth-error.show { display: flex; }
+
+    /* ── Success Banner ──────────────────────────────────────────────── */
+    .auth-success {
+      display: none;
+      background: var(--green-dim);
+      border: 1px solid rgba(16,185,129,0.25);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      font-size: 13px;
+      color: var(--green);
+      gap: 8px;
+      align-items: flex-start;
+    }
+
+    .auth-success.show { display: flex; }
+
+    /* ── Submit Button ───────────────────────────────────────────────── */
+    .auth-submit {
+      width: 100%;
+      padding: 12px;
+      background: var(--amber);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-family: var(--font-display);
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    .auth-submit:hover:not(:disabled) {
+      background: #b91c3c;
+      box-shadow: 0 0 28px var(--amber-glow);
+      transform: translateY(-1px);
+    }
+
+    .auth-submit:disabled {
+      opacity: 0.65;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* Loading spinner */
+    .spinner {
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      display: none;
+    }
+
+    .auth-submit.loading .spinner      { display: block; }
+    .auth-submit.loading .btn-label    { display: none; }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Divider ─────────────────────────────────────────────────────── */
+    .auth-divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: var(--text-muted);
+      font-size: 12px;
+    }
+
+    .auth-divider::before,
+    .auth-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* ── Footer Link ─────────────────────────────────────────────────── */
+    .auth-footer {
+      text-align: center;
+      font-size: 13.5px;
+      color: var(--text-secondary);
+      margin-top: 8px;
+    }
+
+    .auth-footer a { color: var(--amber); font-weight: 600; text-decoration: none; }
+    .auth-footer a:hover { color: #b91c3c; }
+
+    /* ── Field-level error ───────────────────────────────────────────── */
+    .field-error {
+      font-size: 12px;
+      color: var(--red);
+      display: none;
+    }
+
+    .field-error.show { display: block; }
+
+    /* ── Responsive ──────────────────────────────────────────────────── */
+    @media (max-width: 480px) {
+      .auth-card { padding: 28px 22px; border-radius: var(--radius-lg); }
+      .auth-heading { font-size: 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="auth-page">
+  <div class="auth-card">
+
+    <!-- Brand -->
+    <div class="auth-brand">
+      <div class="auth-logo-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m16.5 9.4-9-5.19M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+          <polyline points="3.29 7 12 12 20.71 7"/><line x1="12" y1="22" x2="12" y2="12"/>
+        </svg>
+      </div>
+      <div class="auth-brand-text">
+        <div class="brand-name">SparesMaster</div>
+        <div class="brand-sub">Inventory Control v2</div>
+      </div>
+    </div>
+
+    <!-- Headings -->
+    <h1 class="auth-heading">Welcome back</h1>
+    <p class="auth-sub">Sign in to your account to continue</p>
+
+    <!-- Error / Success banners -->
+    <div class="auth-error" id="auth-error" role="alert">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:1px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <span id="auth-error-text"></span>
+    </div>
+    <div class="auth-success" id="auth-success" role="status">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:1px"><circle cx="12" cy="12" r="10"/><polyline points="9 11 12 14 22 4"/></svg>
+      <span id="auth-success-text"></span>
+    </div>
+
+    <!-- Form -->
+    <form class="auth-form" id="login-form" novalidate>
+
+      <!-- Email -->
+      <div class="auth-field">
+        <label class="auth-label" for="email">Email Address</label>
+        <div class="auth-input-wrap">
+          <input
+            class="auth-input"
+            type="email"
+            id="email"
+            name="email"
+            placeholder="you@company.com"
+            autocomplete="email"
+            required
+          />
+        </div>
+        <span class="field-error" id="email-error"></span>
+      </div>
+
+      <!-- Password -->
+      <div class="auth-field">
+        <label class="auth-label" for="password">Password</label>
+        <div class="auth-input-wrap">
+          <input
+            class="auth-input has-icon"
+            type="password"
+            id="password"
+            name="password"
+            placeholder="••••••••"
+            autocomplete="current-password"
+            required
+          />
+          <button type="button" class="pwd-toggle" id="pwd-toggle" aria-label="Toggle password visibility">
+            <!-- Eye open -->
+            <svg id="eye-open" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            <!-- Eye off (hidden initially) -->
+            <svg id="eye-off" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+          </button>
+        </div>
+        <span class="field-error" id="password-error"></span>
+      </div>
+
+      <!-- Remember Me + Forgot -->
+      <div class="auth-row">
+        <label class="auth-checkbox-label">
+          <input type="checkbox" id="remember-me" name="rememberMe" />
+          Remember me
+        </label>
+        <a href="forgot-password.html" class="auth-link">Forgot password?</a>
+      </div>
+
+      <!-- Submit -->
+      <button type="submit" class="auth-submit" id="submit-btn">
+        <div class="spinner"></div>
+        <span class="btn-label">Sign In</span>
+      </button>
+
+    </form>
+
+    <!-- Sign up link -->
+    <p class="auth-footer" style="margin-top:24px">
+      Don't have an account? <a href="signup.html">Create one</a>
+    </p>
+
+  </div>
+</div>
+
+<script>
+// ── Constants ─────────────────────────────────────────────────────────────────
+const API = '/api/auth';
+
+// ── DOM refs ──────────────────────────────────────────────────────────────────
+const form       = document.getElementById('login-form');
+const emailEl    = document.getElementById('email');
+const passwordEl = document.getElementById('password');
+const rememberEl = document.getElementById('remember-me');
+const submitBtn  = document.getElementById('submit-btn');
+const errorBox   = document.getElementById('auth-error');
+const errorText  = document.getElementById('auth-error-text');
+const successBox = document.getElementById('auth-success');
+const successText= document.getElementById('auth-success-text');
+
+// ── Already logged in? ────────────────────────────────────────────────────────
+(async () => {
+  try {
+    const res = await fetch(`${API}/me`, { credentials: 'include' });
+    if (res.ok) window.location.replace('index.html');
+  } catch { /* not logged in, stay on page */ }
+})();
+
+// ── Password toggle ───────────────────────────────────────────────────────────
+document.getElementById('pwd-toggle').addEventListener('click', () => {
+  const isPassword = passwordEl.type === 'password';
+  passwordEl.type = isPassword ? 'text' : 'password';
+  document.getElementById('eye-open').style.display = isPassword ? 'none' : '';
+  document.getElementById('eye-off').style.display  = isPassword ? ''     : 'none';
+});
+
+// ── UI helpers ────────────────────────────────────────────────────────────────
+function showError(msg) {
+  errorText.textContent = msg;
+  errorBox.classList.add('show');
+  successBox.classList.remove('show');
+}
+
+function showSuccess(msg) {
+  successText.textContent = msg;
+  successBox.classList.add('show');
+  errorBox.classList.remove('show');
+}
+
+function clearMessages() {
+  errorBox.classList.remove('show');
+  successBox.classList.remove('show');
+}
+
+function setFieldError(fieldId, errorId, message) {
+  const field = document.getElementById(fieldId);
+  const err   = document.getElementById(errorId);
+  field.classList.toggle('error', !!message);
+  err.textContent = message || '';
+  err.classList.toggle('show', !!message);
+}
+
+function setLoading(loading) {
+  submitBtn.disabled = loading;
+  submitBtn.classList.toggle('loading', loading);
+}
+
+// ── Form submit ───────────────────────────────────────────────────────────────
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  clearMessages();
+
+  // Client-side validation
+  let valid = true;
+  if (!emailEl.value.trim()) {
+    setFieldError('email', 'email-error', 'Email is required');
+    valid = false;
+  } else {
+    setFieldError('email', 'email-error', '');
+  }
+
+  if (!passwordEl.value) {
+    setFieldError('password', 'password-error', 'Password is required');
+    valid = false;
+  } else {
+    setFieldError('password', 'password-error', '');
+  }
+
+  if (!valid) return;
+
+  setLoading(true);
+
+  try {
+    const res = await fetch(`${API}/login`, {
+      method:      'POST',
+      credentials: 'include',
+      headers:     { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email:      emailEl.value.trim().toLowerCase(),
+        password:   passwordEl.value,
+        rememberMe: rememberEl.checked,
+      }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      // Surface field-level validation errors if present
+      if (data.errors && data.errors.length) {
+        data.errors.forEach(err => {
+          if (err.field === 'email')    setFieldError('email',    'email-error',    err.message);
+          if (err.field === 'password') setFieldError('password', 'password-error', err.message);
+        });
+      }
+      showError(data.message || 'Login failed. Please try again.');
+      return;
+    }
+
+    // Store token in localStorage as fallback for API calls that need it
+    if (data.data && data.data.token) {
+      localStorage.setItem('auth_token', data.data.token);
+      if (data.data.user) {
+        localStorage.setItem('auth_user', JSON.stringify(data.data.user));
+      }
+    }
+
+    showSuccess('Login successful! Redirecting...');
+
+    setTimeout(() => {
+      window.location.replace('index.html');
+    }, 800);
+
+  } catch (err) {
+    showError('Network error. Please check your connection and try again.');
+    console.error('Login error:', err);
+  } finally {
+    setLoading(false);
+  }
+});
+
+// Clear errors on input
+[emailEl, passwordEl].forEach(el => {
+  el.addEventListener('input', () => {
+    el.classList.remove('error');
+    const errEl = document.getElementById(el.id + '-error');
+    if (errEl) { errEl.textContent = ''; errEl.classList.remove('show'); }
+    clearMessages();
+  });
+});
+</script>
+</body>
+</html>

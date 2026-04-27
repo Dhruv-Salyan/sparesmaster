@@ -10,13 +10,15 @@ const cors         = require('cors');
 const helmet       = require('helmet');
 const morgan       = require('morgan');
 const path         = require('path');
+const cookieParser = require('cookie-parser');
 
-const itemRoutes   = require('./routes/items');
+const itemRoutes     = require('./routes/items');
 const optimizeRoutes = require('./routes/optimize');
-const errorHandler = require('./middleware/errorHandler');
-const rateLimiter  = require('./middleware/rateLimiter');
-const logger       = require('./utils/logger');
-const { ok, fail } = require('./utils/apiResponse');
+const authRoutes     = require('./routes/auth');
+const errorHandler   = require('./middleware/errorHandler');
+const rateLimiter    = require('./middleware/rateLimiter');
+const logger         = require('./utils/logger');
+const { ok, fail }   = require('./utils/apiResponse');
 
 const app = express();
 
@@ -42,6 +44,9 @@ app.use(morgan(morganFormat, {
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
+// ── Cookie parser (for JWT httpOnly cookies) ──────────────────────────────────
+app.use(cookieParser());
+
 // ── Rate limiter (applies to all API routes) ──────────────────────────────────
 app.use('/api', rateLimiter);
 
@@ -52,6 +57,7 @@ const frontendPath = path.join(__dirname, '..', '..', 'frontend');
 app.use(express.static(frontendPath));
 
 // ── API Routes ────────────────────────────────────────────────────────────────
+app.use('/api/auth',     authRoutes);
 app.use('/api/items',    itemRoutes);
 app.use('/api/optimize', optimizeRoutes);
 
