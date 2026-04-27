@@ -50,9 +50,9 @@ const db = {
   prepare(sql) {
     return {
       // Return all matching rows as an array
-      all(params) {
-        return rawDb.all(sql, prefixParams(params));
-      },
+    all(params) {
+      return rawDb.all(sql, prefixParams(params));
+    },
       // Return first matching row, or null
       get(params) {
         return rawDb.get(sql, prefixParams(params)) ?? null;
