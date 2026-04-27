@@ -50,28 +50,16 @@ const db = {
   prepare(sql) {
     return {
       // Return all matching rows as an array
-      all(...args) {
-        let params;
-        if (args.length === 1 && args[0] !== null && typeof args[0] === 'object' && !Array.isArray(args[0])) {
-          params = prefixParams(args[0]);
-        } else {
-          params = args;
-        }
-        return rawDb.all(sql, params);
+      all(params) {
+        return rawDb.all(sql, prefixParams(params));
       },
       // Return first matching row, or null
       get(params) {
         return rawDb.get(sql, prefixParams(params)) ?? null;
       },
       // Execute INSERT / UPDATE / DELETE — returns { changes }
-      run(...args) {
-        let params;
-        if (args.length === 1 && args[0] !== null && typeof args[0] === 'object' && !Array.isArray(args[0])) {
-          params = prefixParams(args[0]);
-        } else {
-          params = args;
-        }
-        const result = rawDb.run(sql, params);
+      run(params) {
+        const result = rawDb.run(sql, prefixParams(params));
         return { changes: result.changes };
       },
     };
